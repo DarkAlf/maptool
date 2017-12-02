@@ -111,6 +111,8 @@ public class MapTool {
 	 */
 	public static Double JAVA_VERSION;
 
+	private static String clientId = AppUtil.readClientId();
+
 	public static enum ZoneEvent {
 		Added, Removed, Activated, Deactivated
 	}
@@ -345,10 +347,10 @@ public class MapTool {
 	 *         <code>false</code> otherwise
 	 */
 	public static boolean confirm(String message, Object... params) {
-//		String msg = I18N.getText(message, params);
-//		log.debug(message);
+		//		String msg = I18N.getText(message, params);
+		//		log.debug(message);
 		String title = I18N.getText("msg.title.messageDialogConfirm");
-//		return JOptionPane.showConfirmDialog(clientFrame, msg, title, JOptionPane.OK_OPTION) == JOptionPane.OK_OPTION;
+		//		return JOptionPane.showConfirmDialog(clientFrame, msg, title, JOptionPane.OK_OPTION) == JOptionPane.OK_OPTION;
 		return confirmImpl(title, JOptionPane.OK_OPTION, message, params) == JOptionPane.OK_OPTION;
 	}
 
@@ -394,6 +396,30 @@ public class MapTool {
 		if (val == 2) {
 			showInformation("msg.confirm.deleteToken.removed");
 			AppPreferences.setTokensWarnWhenDeleted(false);
+		}
+		// Any version of 'Yes'...
+		if (val == JOptionPane.YES_OPTION || val == 2) {
+			return true;
+		}
+		// Assume 'No' response
+		return false;
+	}
+
+	public static boolean confirmDrawDelete() {
+		if (!AppPreferences.getDrawWarnWhenDeleted()) {
+			return true;
+		}
+
+		String msg = I18N.getText("msg.confirm.deleteDraw");
+		log.debug(msg);
+		Object[] options = { I18N.getText("msg.title.messageDialog.yes"), I18N.getText("msg.title.messageDialog.no"), I18N.getText("msg.title.messageDialog.dontAskAgain") };
+		String title = I18N.getText("msg.title.messageDialogConfirm");
+		int val = JOptionPane.showOptionDialog(clientFrame, msg, title, JOptionPane.NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+
+		// "Yes, don't show again" Button
+		if (val == 2) {
+			showInformation("msg.confirm.deleteDraw.removed");
+			AppPreferences.setDrawWarnWhenDeleted(false);
 		}
 		// Any version of 'Yes'...
 		if (val == JOptionPane.YES_OPTION || val == 2) {
@@ -634,7 +660,7 @@ public class MapTool {
 			version = "DEVELOPMENT";
 			try {
 				if (MapTool.class.getClassLoader().getResource(VERSION_TXT) != null) {
-					version = new String(FileUtil.loadResource(VERSION_TXT));
+					version = new String(FileUtil.loadResource(VERSION_TXT)).trim();
 				}
 			} catch (IOException ioe) {
 				String msg = I18N.getText("msg.info.versionFile", VERSION_TXT);
@@ -948,6 +974,10 @@ public class MapTool {
 	}
 
 	public static void addZone(Zone zone) {
+		addZone(zone, true);
+	}
+
+	public static void addZone(Zone zone, boolean changeZone) {
 		if (getCampaign().getZones().size() == 1) {
 			// Remove the default map
 			Zone singleZone = getCampaign().getZones().get(0);
@@ -960,7 +990,11 @@ public class MapTool {
 		eventDispatcher.fireEvent(ZoneEvent.Added, getCampaign(), null, zone);
 
 		// Show the new zone
-		clientFrame.setCurrentZoneRenderer(ZoneRendererFactory.newRenderer(zone));
+		if (changeZone)
+			clientFrame.setCurrentZoneRenderer(ZoneRendererFactory.newRenderer(zone));
+		else {
+			getFrame().getZoneRenderers().add(ZoneRendererFactory.newRenderer(zone));
+		}
 	}
 
 	public static Player getPlayer() {
@@ -1175,10 +1209,10 @@ public class MapTool {
 				macOSXicon();
 			}
 			// If running on Windows based OS, CJK font is broken when using TinyLAF.
-//			else if (WINDOWS) {
-//				UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-//				menuBar = new AppMenuBar();
-//			}
+			//			else if (WINDOWS) {
+			//				UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+			//				menuBar = new AppMenuBar();
+			//			}
 			else {
 				lafname = "de.muntjak.tinylookandfeel.TinyLookAndFeel";
 				UIManager.setLookAndFeel(lafname);
@@ -1430,10 +1464,14 @@ public class MapTool {
 			};
 
 			webAppThread.run();
-		} catch (Exception e) {  // TODO: This needs to be logged
+		} catch (Exception e) { // TODO: This needs to be logged
 			System.out.println("Unable to start web server");
 			e.printStackTrace();
 		}
+	}
+
+	public static String getClientId() {
+		return clientId;
 	}
 
 	private static class ServerHeartBeatThread extends Thread {

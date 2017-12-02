@@ -46,11 +46,20 @@ public class TokenPropertyFunctions extends AbstractFunction {
 	private static final TokenPropertyFunctions instance = new TokenPropertyFunctions();
 
 	private TokenPropertyFunctions() {
-		super(0, 4, "getPropertyNames", "getAllPropertyNames", "getPropertyNamesRaw", "hasProperty", "isNPC", "isPC", "setPC", "setNPC", "getLayer", "setLayer", "getSize", "setSize", "getOwners",
-				"isOwnedByAll", "isOwner", "resetProperty", "getProperty", "setProperty", "isPropertyEmpty", "getPropertyDefault", "sendToBack", "bringToFront", "getLibProperty", "setLibProperty",
-				"getLibPropertyNames", "setPropertyType", "getPropertyType", "getRawProperty", "getTokenFacing", "setTokenFacing", "removeTokenFacing", "getMatchingProperties",
-				"getMatchingLibProperties", "isSnapToGrid", "setOwner", "getTokenWidth", "getTokenHeight", "setTokenWidth", "setTokenHeight", "getTokenShape", "setTokenShape",
-				"getGMNotes", "setGMNotes", "getNotes", "setNotes");
+		super(0, 4, "getPropertyNames", "getAllPropertyNames",
+				"getPropertyNamesRaw", "hasProperty", "isNPC", "isPC", "setPC",
+				"setNPC", "getLayer", "setLayer", "getSize", "setSize",
+				"getOwners", "isOwnedByAll", "isOwner", "resetProperty",
+				"getProperty", "setProperty", "isPropertyEmpty",
+				"getPropertyDefault", "sendToBack", "bringToFront",
+				"getLibProperty", "setLibProperty", "getLibPropertyNames",
+				"setPropertyType", "getPropertyType", "getRawProperty",
+				"getTokenFacing", "setTokenFacing", "removeTokenFacing",
+				"getMatchingProperties", "getMatchingLibProperties",
+				"isSnapToGrid", "setOwner", "getTokenWidth", "getTokenHeight",
+				"setTokenWidth", "setTokenHeight", "getTokenShape",
+				"setTokenShape", "getGMNotes", "setGMNotes", "getNotes",
+				"setNotes", "setTokenSnapToGrid");
 	}
 
 	public static TokenPropertyFunctions getInstance() {
@@ -383,7 +392,8 @@ public class TokenPropertyFunctions extends AbstractFunction {
 		if (functionName.equals("getGMNotes")) {
 			checkNumberOfParameters(functionName, parameters, 0, 1);
 			Token token = getTokenFromParam(resolver, functionName, parameters, 0);
-			return token.getGMNotes();
+			String notes = token.getGMNotes();
+			return notes != null ? notes : "";
 		}
 
 		/*
@@ -392,7 +402,7 @@ public class TokenPropertyFunctions extends AbstractFunction {
 		if (functionName.equals("setGMNotes")) {
 			checkNumberOfParameters(functionName, parameters, 1, 2);
 			Token token = getTokenFromParam(resolver, functionName, parameters, 1);
-			token.setGMNotes( parameters.get(0).toString());
+			token.setGMNotes(parameters.get(0).toString());
 			zone.putToken(token);
 			return token.getGMNotes();
 		}
@@ -403,7 +413,8 @@ public class TokenPropertyFunctions extends AbstractFunction {
 		if (functionName.equals("getNotes")) {
 			checkNumberOfParameters(functionName, parameters, 0, 1);
 			Token token = getTokenFromParam(resolver, functionName, parameters, 0);
-			return token.getNotes();
+			String notes = token.getNotes();
+			return notes != null ? notes : "";
 		}
 
 		/*
@@ -412,7 +423,7 @@ public class TokenPropertyFunctions extends AbstractFunction {
 		if (functionName.equals("setNotes")) {
 			checkNumberOfParameters(functionName, parameters, 1, 2);
 			Token token = getTokenFromParam(resolver, functionName, parameters, 1);
-			token.setNotes( parameters.get(0).toString());
+			token.setNotes(parameters.get(0).toString());
 			zone.putToken(token);
 			return token.getNotes();
 		}
@@ -709,12 +720,22 @@ public class TokenPropertyFunctions extends AbstractFunction {
 			token.setSnapToScale(false);
 
 			if (functionName.equals("setTokenWidth")) {
-				token.setScaleX(magnitude/token.getWidth());
-				token.setScaleY(oldHeight/token.getHeight());
+				token.setScaleX(magnitude / token.getWidth());
+				token.setScaleY(oldHeight / token.getHeight());
 			} else { // it wasn't 'setTokenWidth' which means functionName equals 'setTokenHeight'
-				token.setScaleX(oldWidth/token.getWidth());
-				token.setScaleY(magnitude/token.getHeight());
+				token.setScaleX(oldWidth / token.getWidth());
+				token.setScaleY(magnitude / token.getHeight());
 			}
+			return "";
+		}
+
+		/* Sets whether the token should snap to the grid or not*/
+		if (functionName.equals("setTokenSnapToGrid")) {
+			checkNumberOfParameters(functionName, parameters, 1, 2);
+
+			Object param = parameters.get(0);
+			Token token = getTokenFromParam((MapToolVariableResolver) parser.getVariableResolver(), functionName, parameters, 1);
+			token.setSnapToGrid(AbstractTokenAccessorFunction.getBooleanValue(param));
 			return "";
 		}
 		throw new ParserException(I18N.getText("macro.function.general.unknownFunction", functionName));

@@ -1,12 +1,12 @@
 /*
- *  This software copyright by various authors including the RPTools.net
- *  development team, and licensed under the LGPL Version 3 or, at your
- *  option, any later version.
+ * This software copyright by various authors including the RPTools.net
+ * development team, and licensed under the LGPL Version 3 or, at your option,
+ * any later version.
  *
- *  Portions of this software were originally covered under the Apache
- *  Software License, Version 1.1 or Version 2.0.
+ * Portions of this software were originally covered under the Apache Software
+ * License, Version 1.1 or Version 2.0.
  *
- *  See the file LICENSE elsewhere in this distribution for license details.
+ * See the file LICENSE elsewhere in this distribution for license details.
  */
 
 package net.rptools.maptool.client.ui;
@@ -115,6 +115,7 @@ public class PreferencesDialog extends JDialog {
 	private final JComboBox showNumberingCombo;
 	private final JComboBox movementMetricCombo;
 	private final JCheckBox showStatSheetCheckBox;
+	private final JCheckBox forceFacingArrowCheckBox;
 
 	private final JSpinner haloLineWidthSpinner;
 	private final JSpinner haloOverlayOpacitySpinner;
@@ -170,6 +171,7 @@ public class PreferencesDialog extends JDialog {
 	private final JCheckBox ownerPermissions;
 	private final JCheckBox lockMovement;
 	private final JCheckBox showInitGainMessage;
+	private final JTextField upnpDiscoveryTimeoutTextField;
 
 	public PreferencesDialog() {
 		super(MapTool.getFrame(), "Preferences", true);
@@ -188,6 +190,7 @@ public class PreferencesDialog extends JDialog {
 			}
 		});
 
+		forceFacingArrowCheckBox = panel.getCheckBox("forceFacingArrow");
 		showStatSheetCheckBox = panel.getCheckBox("showStatSheet");
 		showNumberingCombo = panel.getComboBox("showNumberingCombo");
 		saveReminderCheckBox = panel.getCheckBox("saveReminderCheckBox");
@@ -247,6 +250,7 @@ public class PreferencesDialog extends JDialog {
 		ownerPermissions = panel.getCheckBox("ownerPermission");
 		lockMovement = panel.getCheckBox("lockMovement");
 		showInitGainMessage = panel.getCheckBox("showInitGainMessage");
+		upnpDiscoveryTimeoutTextField = panel.getTextField("upnpDiscoveryTimeoutTextField");
 		typingNotificationDuration = panel.getSpinner("typingNotificationDuration");
 		setInitialState();
 
@@ -415,6 +419,11 @@ public class PreferencesDialog extends JDialog {
 				AppPreferences.setShowStatSheet(showStatSheetCheckBox.isSelected());
 			}
 		});
+		forceFacingArrowCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				AppPreferences.setForceFacingArrow(forceFacingArrowCheckBox.isSelected());
+			}
+		});
 		backgroundsStartFreeSizeCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AppPreferences.setBackgroundsStartFreesize(backgroundsStartFreeSizeCheckBox.isSelected());
@@ -546,6 +555,12 @@ public class PreferencesDialog extends JDialog {
 				AppPreferences.setShowInitGainMessage(showInitGainMessage.isSelected());
 			}
 		});
+		upnpDiscoveryTimeoutTextField.getDocument().addDocumentListener(new DocumentListenerProxy(upnpDiscoveryTimeoutTextField) {
+			@Override
+			protected void storeNumericValue(int value) {
+				AppPreferences.setUpnpDiscoveryTimeout(value);
+			}
+		});
 		chatNotificationShowBackground.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AppPreferences.setChatNotificationShowBackground(chatNotificationShowBackground.isSelected());
@@ -556,6 +571,7 @@ public class PreferencesDialog extends JDialog {
 		gridTypeModel.addElement(GridFactory.SQUARE);
 		gridTypeModel.addElement(GridFactory.HEX_HORI);
 		gridTypeModel.addElement(GridFactory.HEX_VERT);
+		gridTypeModel.addElement(GridFactory.ISOMETRIC);
 		gridTypeModel.setSelectedItem(AppPreferences.getDefaultGridType());
 		defaultGridTypeCombo.setModel(gridTypeModel);
 		defaultGridTypeCombo.addItemListener(new ItemListener() {
@@ -631,7 +647,7 @@ public class PreferencesDialog extends JDialog {
 	 * anything and avoids having to track what grid types are being used.
 	 */
 	private void updateFacings() {
-//		List<Zone> zlist = MapTool.getServer().getCampaign().getZones();	// generated NPE http://forums.rptools.net/viewtopic.php?f=3&t=17334
+		//		List<Zone> zlist = MapTool.getServer().getCampaign().getZones();	// generated NPE http://forums.rptools.net/viewtopic.php?f=3&t=17334
 		List<Zone> zlist = MapTool.getCampaign().getZones();
 		boolean faceEdges = AppPreferences.getFaceEdge();
 		boolean faceVertices = AppPreferences.getFaceVertex();
@@ -656,6 +672,7 @@ public class PreferencesDialog extends JDialog {
 		stampsStartSnapToGridCheckBox.setSelected(AppPreferences.getObjectsStartSnapToGrid());
 		backgroundsStartFreeSizeCheckBox.setSelected(AppPreferences.getBackgroundsStartFreesize());
 		showStatSheetCheckBox.setSelected(AppPreferences.getShowStatSheet());
+		forceFacingArrowCheckBox.setSelected(AppPreferences.getForceFacingArrow());
 		backgroundsStartSnapToGridCheckBox.setSelected(AppPreferences.getBackgroundsStartSnapToGrid());
 		defaultGridSizeTextField.setText(Integer.toString(AppPreferences.getDefaultGridSize()));
 		defaultUnitsPerCellTextField.setText(Integer.toString(AppPreferences.getDefaultUnitsPerCell()));
@@ -693,6 +710,7 @@ public class PreferencesDialog extends JDialog {
 		ownerPermissions.setSelected(AppPreferences.getInitOwnerPermissions());
 		lockMovement.setSelected(AppPreferences.getInitLockMovement());
 		showInitGainMessage.setSelected(AppPreferences.isShowInitGainMessage());
+		upnpDiscoveryTimeoutTextField.setText(Integer.toString(AppPreferences.getUpnpDiscoveryTimeout()));
 		Integer rawVal = AppPreferences.getTypingNotificationDuration();
 		Integer typingVal = null;
 		if (rawVal != null && rawVal > 99) { // backward compatibility -- used to be stored in ms, now in seconds

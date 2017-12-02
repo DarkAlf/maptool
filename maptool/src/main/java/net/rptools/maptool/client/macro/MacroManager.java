@@ -1,12 +1,12 @@
 /*
- *  This software copyright by various authors including the RPTools.net
- *  development team, and licensed under the LGPL Version 3 or, at your
- *  option, any later version.
+ * This software copyright by various authors including the RPTools.net
+ * development team, and licensed under the LGPL Version 3 or, at your option,
+ * any later version.
  *
- *  Portions of this software were originally covered under the Apache
- *  Software License, Version 1.1 or Version 2.0.
+ * Portions of this software were originally covered under the Apache Software
+ * License, Version 1.1 or Version 2.0.
  *
- *  See the file LICENSE elsewhere in this distribution for license details.
+ * See the file LICENSE elsewhere in this distribution for license details.
  */
 
 package net.rptools.maptool.client.macro;
@@ -32,8 +32,6 @@ import java.util.regex.Pattern;
 /**
  * @author drice
  * 
- *         TODO To change the template for this generated type comment go to Window - Preferences - Java - Code Style -
- *         Code Templates
  */
 public class MacroManager {
 
@@ -160,7 +158,7 @@ public class MacroManager {
 				MacroDefinition def = macro.getClass().getAnnotation(MacroDefinition.class);
 
 				boolean trustedPath = macroExecutionContext == null ? false : macroExecutionContext.isTrusted();
-				String macroButtonName = macroExecutionContext == null ? "<chat>" : macroExecutionContext.getName() + "@" + macroExecutionContext.getSouce();
+				String macroButtonName = macroExecutionContext == null ? "<chat>" : macroExecutionContext.getName() + "@" + macroExecutionContext.getSource();
 
 				// Preprocess line if required.
 				if (def == null || def.expandRolls()) {

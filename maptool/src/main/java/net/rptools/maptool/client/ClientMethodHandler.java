@@ -56,8 +56,6 @@ import net.rptools.maptool.transfer.AssetHeader;
 /**
  * @author drice
  * 
- *         TODO To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Style - Code Templates
  */
 public class ClientMethodHandler extends AbstractMethodHandler {
 	public ClientMethodHandler() {
@@ -66,7 +64,7 @@ public class ClientMethodHandler extends AbstractMethodHandler {
 	public void handleMethod(final String id, final String method, final Object... parameters) {
 		final ClientCommand.COMMAND cmd = Enum.valueOf(ClientCommand.COMMAND.class, method);
 
-//		System.out.println("ClientMethodHandler#handleMethod: " + cmd.name());
+		//		System.out.println("ClientMethodHandler#handleMethod: " + cmd.name());
 
 		// These commands are safe to do in the background, any events that cause model updates need
 		// to be on the EDT (See next section)
@@ -380,7 +378,7 @@ public class ClientMethodHandler extends AbstractMethodHandler {
 				case setTokenLocation:
 					// Only the table should process this
 					if (MapTool.getPlayer().getName().equalsIgnoreCase("Table")) {
-//						System.out.println("Inside ClientMethodHandler.handleMethod().setTokenLocation");
+						//						System.out.println("Inside ClientMethodHandler.handleMethod().setTokenLocation");
 						zoneGUID = (GUID) parameters[0];
 						keyToken = (GUID) parameters[1];
 
@@ -544,7 +542,7 @@ public class ClientMethodHandler extends AbstractMethodHandler {
 					MapTool.getCampaign().setMacroButtonPropertiesArray(new ArrayList<MacroButtonProperties>((ArrayList<MacroButtonProperties>) parameters[0]));
 					MapTool.getFrame().getCampaignPanel().reset();
 					return;
-					// moved this down into the event queue section so that the threading works as expected
+				// moved this down into the event queue section so that the threading works as expected
 
 				case setLiveTypingLabel:
 					if ((Boolean) parameters[1]) {

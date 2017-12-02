@@ -2,9 +2,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -125,18 +125,18 @@ import com.jidesoft.docking.DockableFrame;
  * used throughout the application. Most of these are added to the main frame
  * menu, but some are added dynamically as needed, sometimes to the frame menu
  * but also to the context menu (the "right-click menu").
- * 
+ *
  * Each object instantiated from {@link DefaultClientAction} should have an
  * initializer that calls {@link ClientAction#init(String)} and passes the base
  * message key from the properties file. This base message key will be used to
  * locate the text that should appear on the menu item as well as the
  * accelerator, mnemonic, and short description strings. (See the {@link I18N}
  * class for more details on how the key is used.
- * 
+ *
  * In addition, each object should override {@link ClientAction#isAvailable()}
  * and return true if the application is in a state where the Action should be
  * enabled. (The default is <code>true</code>.)
- * 
+ *
  * Last is the {@link ClientAction#execute(ActionEvent)} method. It is passed
  * the {@link ActionEvent} object that triggered this Action as a parameter. It
  * should perform the necessary work to accomplish the effect of the Action.
@@ -538,13 +538,16 @@ public class AppActions {
 
 		@Override
 		public void execute(ActionEvent e) {
-
 			Zone zone = MapTool.getFrame().getCurrentZoneRenderer().getZone();
-			String msg = I18N.getText("msg.confirm.renameMap", zone.getName() != null ? zone.getName() : "");
-			String name = JOptionPane.showInputDialog(MapTool.getFrame(), msg);
+			String oldName = zone.getName();
+			if (oldName == null)
+				oldName = "";
+			String msg = I18N.getText("msg.confirm.renameMap", oldName);
+			String name = JOptionPane.showInputDialog(MapTool.getFrame(), msg, oldName);
 			if (name != null) {
 				zone.setName(name);
 				MapTool.serverCommand().renameZone(zone.getId(), name);
+				MapTool.getFrame().setCurrentZoneRenderer(MapTool.getFrame().getCurrentZoneRenderer());
 			}
 		}
 	};
@@ -697,24 +700,24 @@ public class AppActions {
 	 * public static final DefaultClientAction UNDO_DRAWING = new
 	 * DefaultClientAction() { { init("action.undoDrawing"); isAvailable(); //
 	 * XXX FJE Is this even necessary? }
-	 * 
+	 *
 	 * @Override public void execute(ActionEvent e) {
 	 * DrawableUndoManager.getInstance().undo(); isAvailable();
 	 * REDO_DRAWING.isAvailable(); // XXX FJE Calling these forces the update,
 	 * but won't the framework call them? }
-	 * 
+	 *
 	 * @Override public boolean isAvailable() {
 	 * setEnabled(DrawableUndoManager.getInstance().getUndoManager().canUndo());
 	 * return isEnabled(); } };
-	 * 
+	 *
 	 * public static final DefaultClientAction REDO_DRAWING = new
 	 * DefaultClientAction() { { init("action.redoDrawing"); isAvailable(); //
 	 * XXX Is this even necessary? }
-	 * 
+	 *
 	 * @Override public void execute(ActionEvent e) {
 	 * DrawableUndoManager.getInstance().redo(); isAvailable();
 	 * UNDO_DRAWING.isAvailable(); }
-	 * 
+	 *
 	 * @Override public boolean isAvailable() {
 	 * setEnabled(DrawableUndoManager.getInstance().getUndoManager().canRedo());
 	 * return isEnabled(); } };
@@ -774,7 +777,7 @@ public class AppActions {
 	 * <p>
 	 * If any tokens<i>are</i> deleted, then the selection set for the zone is
 	 * cleared.
-	 * 
+	 *
 	 * @param zone
 	 * @param tokenSet
 	 */
@@ -824,7 +827,7 @@ public class AppActions {
 	 * "clipboard") so that they can be pasted back in again later. This is the
 	 * highest level function in that it determines token ownership (only owners
 	 * can copy/cut tokens).
-	 * 
+	 *
 	 * @param tokenSet
 	 *            the set of tokens to copy; if empty, plays the
 	 *            {@link MapTool#SND_INVALID_OPERATION} sound.
@@ -873,7 +876,7 @@ public class AppActions {
 	 * <li>All tokens have their relative pixel offsets saved and reproduced
 	 * when pasted back in.
 	 * </ul>
-	 * 
+	 *
 	 * <li><b>Both maps have grids.</b><br>
 	 * This scheme will preserve proper spacing on the Token layer (for tokens)
 	 * and on the Object and Background layers (for stamps). The spacing will
@@ -889,7 +892,7 @@ public class AppActions {
 	 * <li>For all tokens that are not snapToGrid, their relative pixel offsets
 	 * should be saved and reproduced when the tokens are pasted.
 	 * </ul>
-	 * 
+	 *
 	 * <li><b>The source map is gridless and the destination has a grid.</b><br>
 	 * This one is essentially identical to the first case.
 	 * <ul>
@@ -898,7 +901,7 @@ public class AppActions {
 	 * tokens have the relative pixel offsets applied and then are "snapped"
 	 * into the correct cell location.
 	 * </ul>
-	 * 
+	 *
 	 * <li><b>The source map has a grid and the destination is gridless.</b><br>
 	 * This one is essentially identical to the first case.
 	 * <ul>
@@ -906,7 +909,7 @@ public class AppActions {
 	 * offsets are reproduced when pasted.
 	 * </ul>
 	 * </ol>
-	 * 
+	 *
 	 * @param tokenList
 	 *            the list of tokens to copy; if empty, plays the
 	 *            {@link MapTool#SND_INVALID_OPERATION} sound.
@@ -986,7 +989,7 @@ public class AppActions {
 	 * specified location on the given layer. See {@link #copyTokens(List)} for
 	 * details of how the copy/paste operations work with respect to grid type
 	 * on the source and destination zones.
-	 * 
+	 *
 	 * @param destination
 	 *            ZonePoint specifying where to paste; normally this is
 	 *            unchanged from the MouseEvent
@@ -1030,7 +1033,7 @@ public class AppActions {
 		for (Token origToken : tokenList) {
 			Token token = new Token(origToken);
 
-			// need this here to get around times when a token is copied and pasted into the 
+			// need this here to get around times when a token is copied and pasted into the
 			// same zone, such as a framework "template"
 			if (allTokensSet != null && allTokensSet.contains(token.getExposedAreaGUID())) {
 				GUID guid = new GUID();
@@ -1085,8 +1088,8 @@ public class AppActions {
 			String mesg = "Failed to paste token(s) with duplicate name(s): " + failedPaste;
 			TextMessage msg = TextMessage.gm(null, mesg);
 			MapTool.addMessage(msg);
-//			msg.setChannel(Channel.ME);
-//			MapTool.addMessage(msg);
+			//			msg.setChannel(Channel.ME);
+			//			MapTool.addMessage(msg);
 		}
 	}
 
@@ -1850,7 +1853,8 @@ public class AppActions {
 					boolean useIF = serverProps.getUseIndividualViews() && serverProps.getUseIndividualFOW();
 					policy.setUseIndividualFOW(useIF);
 
-					ServerConfig config = new ServerConfig(serverProps.getUsername(), serverProps.getGMPassword(), serverProps.getPlayerPassword(), serverProps.getPort(), serverProps.getRPToolsName());
+					ServerConfig config = new ServerConfig(serverProps.getUsername(), serverProps.getGMPassword(), serverProps.getPlayerPassword(), serverProps.getPort(),
+							serverProps.getRPToolsName());
 
 					// Use the existing campaign
 					Campaign campaign = MapTool.getCampaign();
@@ -1866,7 +1870,7 @@ public class AppActions {
 						}
 						// Right now set this is set to whatever the last server settings were.  If we wanted to turn it on and
 						// leave it turned on, the line would change to:
-//						campaign.setHasUsedFogToolbar(useIF || campaign.hasUsedFogToolbar());
+						//						campaign.setHasUsedFogToolbar(useIF || campaign.hasUsedFogToolbar());
 						campaign.setHasUsedFogToolbar(useIF);
 
 						// Make a copy of the campaign since we don't coordinate local changes well ... yet
@@ -1879,7 +1883,7 @@ public class AppActions {
 						 * in) is recreated. This means that only some items for
 						 * that campaign, zone(s), and token's are copied over
 						 * when you start a new server instance.
-						 * 
+						 *
 						 * You need to modify either Campaign(Campaign) or
 						 * Zone(Zone) to get any data you need to persist from
 						 * the pre-server campaign to the post server start up
@@ -2093,8 +2097,8 @@ public class AppActions {
 						// Load
 						final PersistedCampaign campaign = PersistenceUtil.loadCampaign(campaignFile);
 						if (campaign != null) {
-//							current = MapTool.getFrame().getCurrentZoneRenderer();
-//							MapTool.getFrame().setCurrentZoneRenderer(null);
+							//							current = MapTool.getFrame().getCurrentZoneRenderer();
+							//							MapTool.getFrame().setCurrentZoneRenderer(null);
 							ImageManager.flush(); // Clear out the old campaign's images
 
 							AppState.setCampaignFile(campaignFile);
@@ -2105,16 +2109,16 @@ public class AppActions {
 							 * Bypass the serialization when we are hosting the
 							 * server.
 							 */
-//							if (MapTool.isHostingServer() || MapTool.isPersonalServer()) {
-//								/*
-//								 * TODO: This optimization doesn't work since
-//								 * the player name isn't the right thing to use
-//								 * to exclude this thread...
-//								 */
-//								String playerName = MapTool.getPlayer().getName();
-//								String command = ServerCommand.COMMAND.setCampaign.name();
-//								MapTool.getServer().getMethodHandler().handleMethod(playerName, command, new Object[] { campaign.campaign });
-//							} else
+							//							if (MapTool.isHostingServer() || MapTool.isPersonalServer()) {
+							//								/*
+							//								 * TODO: This optimization doesn't work since
+							//								 * the player name isn't the right thing to use
+							//								 * to exclude this thread...
+							//								 */
+							//								String playerName = MapTool.getPlayer().getName();
+							//								String command = ServerCommand.COMMAND.setCampaign.name();
+							//								MapTool.getServer().getMethodHandler().handleMethod(playerName, command, new Object[] { campaign.campaign });
+							//							} else
 							{
 								MapTool.serverCommand().setCampaign(campaign.campaign);
 							}
@@ -2324,9 +2328,9 @@ public class AppActions {
 	 * stored map into the current campaign. This Action is only available when
 	 * the current application is either hosting a server or is not connected to
 	 * a server.
-	 * 
+	 *
 	 * Property used from <b>i18n.properties</b> is <code>action.loadMap</code>
-	 * 
+	 *
 	 * @author FJE
 	 */
 	public static final LoadMapAction LOAD_MAP = new LoadMapAction() {
@@ -2336,7 +2340,7 @@ public class AppActions {
 
 		@Override
 		public boolean isAvailable() {
-//			return MapTool.isHostingServer() || MapTool.isPersonalServer();
+			//			return MapTool.isHostingServer() || MapTool.isPersonalServer();
 			// I'd like to be able to use this instead as it's less restrictive, but it's safer to disallow for now.
 			return MapTool.isHostingServer() || (MapTool.getPlayer() != null && MapTool.getPlayer().isGM());
 		}
@@ -2350,7 +2354,7 @@ public class AppActions {
 				isRemoteGM = true;
 				if (isRemoteGM) {
 					// Returns true if they select OK and false otherwise
-//					setSeenWarning(MapTool.confirm("action.loadMap.warning"));
+					//					setSeenWarning(MapTool.confirm("action.loadMap.warning"));
 					ImageIcon icon = null;
 					try {
 						Image img = ImageUtil.getImage("net/rptools/maptool/client/image/book_open.png");
@@ -2367,8 +2371,7 @@ public class AppActions {
 							I18N.getText("msg.title.messageDialogConfirm"),
 							JOptionPane.DEFAULT_OPTION,
 							JOptionPane.WARNING_MESSAGE, null,
-							options, options[2]
-							);
+							options, options[2]);
 					if (result == 1)
 						setSeenWarning(true); // Yes
 					else {
@@ -2633,10 +2636,11 @@ public class AppActions {
 					newMapDialog.setZone(zone);
 					newMapDialog.setVisible(true);
 					// Too many things can change to send them 1 by 1 to the client... just resend the zone
-//					MapTool.serverCommand().setBoard(zone.getId(), zone.getMapAssetId(), zone.getBoardX(), zone.getBoardY());
+					//					MapTool.serverCommand().setBoard(zone.getId(), zone.getMapAssetId(), zone.getBoardX(), zone.getBoardY());
 					MapTool.serverCommand().removeZone(zone.getId());
 					MapTool.serverCommand().putZone(zone);
-					MapTool.getFrame().getCurrentZoneRenderer().flush();
+					//MapTool.getFrame().getCurrentZoneRenderer().flush();
+					MapTool.getFrame().setCurrentZoneRenderer(MapTool.getFrame().getCurrentZoneRenderer());
 				}
 			});
 		}
@@ -2785,7 +2789,7 @@ public class AppActions {
 		 * <code>null</code> because not all Actions have an associated
 		 * accelerator key defined, but it is currently only called by methods
 		 * that reference the {CUT,COPY,PASTE}_TOKEN Actions.
-		 * 
+		 *
 		 * @return KeyStroke associated with the Action or <code>null</code>
 		 */
 		public final KeyStroke getKeyStroke() {

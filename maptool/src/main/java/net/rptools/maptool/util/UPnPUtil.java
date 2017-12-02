@@ -33,6 +33,7 @@ import javax.swing.SwingConstants;
 
 import net.rptools.lib.swing.SwingUtil;
 import net.rptools.maptool.client.MapTool;
+import net.rptools.maptool.client.AppPreferences;
 import net.sbbi.upnp.Discovery;
 import net.sbbi.upnp.impls.InternetGatewayDevice;
 import net.sbbi.upnp.messages.ActionResponse;
@@ -45,7 +46,6 @@ import org.apache.log4j.Logger;
  */
 public class UPnPUtil {
 	private static final Logger log = Logger.getLogger(UPnPUtil.class);
-	private static int discoveryTimeout = 5000; // Should be made a preference setting
 	private static Map<InternetGatewayDevice, NetworkInterface> igds;
 	private static List<InternetGatewayDevice> mappings;
 	private static JDialog dialog = null;
@@ -91,7 +91,7 @@ public class UPnPUtil {
 								log.info("UPnP:  Trying interface " + ni.getDisplayName());
 							InternetGatewayDevice[] thisNI;
 							showMessage(ni.getDisplayName(), "Looking for gateway devices on " + ni.getDisplayName());
-							thisNI = InternetGatewayDevice.getDevices(discoveryTimeout, Discovery.DEFAULT_TTL, Discovery.DEFAULT_MX, ni);
+							thisNI = InternetGatewayDevice.getDevices(AppPreferences.getUpnpDiscoveryTimeout(), Discovery.DEFAULT_TTL, Discovery.DEFAULT_MX, ni);
 							showMessage(null, null);
 							if (thisNI != null) {
 								for (InternetGatewayDevice igd : thisNI) {
@@ -189,11 +189,11 @@ public class UPnPUtil {
 			try {
 				ActionResponse actResp = gd.getSpecificPortMappingEntry(null, port, "TCP");
 				if (actResp != null && "MapTool".equals(actResp.getOutActionArgumentValue("NewPortMappingDescription"))) {
-//					NewInternalPort=51234
-//					NewEnabled=1
-//					NewInternalClient=192.168.0.30
-//					NewLeaseDuration=0
-//					NewPortMappingDescription=MapTool
+					//					NewInternalPort=51234
+					//					NewEnabled=1
+					//					NewInternalClient=192.168.0.30
+					//					NewLeaseDuration=0
+					//					NewPortMappingDescription=MapTool
 					boolean unmapped = gd.deletePortMapping(null, port, "TCP");
 					if (unmapped) {
 						iter.remove();
@@ -212,13 +212,5 @@ public class UPnPUtil {
 			}
 		}
 		return count > 0;
-	}
-
-	public static int getDiscoveryTimeout() {
-		return discoveryTimeout;
-	}
-
-	public static void setDiscoveryTimeout(int discoveryTimeout) {
-		UPnPUtil.discoveryTimeout = discoveryTimeout;
 	}
 }

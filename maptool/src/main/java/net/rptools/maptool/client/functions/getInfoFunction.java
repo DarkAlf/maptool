@@ -182,6 +182,7 @@ public class getInfoFunction extends AbstractFunction {
 				cinfo.put("library tokens", libInfo);
 			}
 			cinfo.put("user defined functions", JSONArray.fromObject(UserDefinedMacroFunctions.getInstance().getAliases()));
+			cinfo.put("client id", MapTool.getClientId());
 		}
 		return JSONObject.fromObject(cinfo);
 	}
@@ -262,10 +263,10 @@ public class getInfoFunction extends AbstractFunction {
 				linfo.put("name", ls.getName());
 				linfo.put("max range", ls.getMaxRange());
 				linfo.put("type", ls.getType());
-//				List<Light> lights = new ArrayList<Light>();
-//				for (Light light : ls.getLightList()) {
-//					lights.add(light);
-//				}
+				//				List<Light> lights = new ArrayList<Light>();
+				//				for (Light light : ls.getLightList()) {
+				//					lights.add(light);
+				//				}
 				linfo.put("light segments", ls.getLightList());
 				ltinfo.add(linfo);
 			}

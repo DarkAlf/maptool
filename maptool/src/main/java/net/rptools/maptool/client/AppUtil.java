@@ -1,17 +1,22 @@
 /*
- *  This software copyright by various authors including the RPTools.net
- *  development team, and licensed under the LGPL Version 3 or, at your
- *  option, any later version.
+ * This software copyright by various authors including the RPTools.net
+ * development team, and licensed under the LGPL Version 3 or, at your option,
+ * any later version.
  *
- *  Portions of this software were originally covered under the Apache
- *  Software License, Version 1.1 or Version 2.0.
+ * Portions of this software were originally covered under the Apache Software
+ * License, Version 1.1 or Version 2.0.
  *
- *  See the file LICENSE elsewhere in this distribution for license details.
+ * See the file LICENSE elsewhere in this distribution for license details.
  */
 
 package net.rptools.maptool.client;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 import net.rptools.maptool.client.ui.zone.PlayerView;
 import net.rptools.maptool.language.I18N;
@@ -32,6 +37,8 @@ public class AppUtil {
 	public static final String DATADIR_PROPERTY_NAME = "MAPTOOL_DATADIR";
 
 	private static File dataDirPath;
+
+	private static final String CLIENT_ID_FILE = "client-id";
 
 	/**
 	 * Returns a File object for USER_HOME if USER_HOME is non-null, otherwise null.
@@ -171,5 +178,26 @@ public class AppUtil {
 			return true;
 		}
 		return zone.isTokenVisible(token);
+	}
+
+	public static String readClientId() {
+		Path clientFile = Paths.get(getAppHome().getAbsolutePath(), CLIENT_ID_FILE);
+		String clientId = "unknown";
+		if (!clientFile.toFile().exists()) {
+			clientId = UUID.randomUUID().toString();
+			try {
+				Files.write(clientFile, clientId.getBytes());
+			} catch (IOException e) {
+				log.info("msg.error.unableToCreateClientIdFile", e);
+			}
+		} else {
+			try {
+				clientId = new String(Files.readAllBytes(clientFile));
+			} catch (IOException e) {
+				log.info("msg.error.unableToReadClientIdFile", e);
+			}
+		}
+		return clientId;
+
 	}
 }

@@ -1,12 +1,12 @@
 /*
- *  This software copyright by various authors including the RPTools.net
- *  development team, and licensed under the LGPL Version 3 or, at your
- *  option, any later version.
+ * This software copyright by various authors including the RPTools.net
+ * development team, and licensed under the LGPL Version 3 or, at your option,
+ * any later version.
  *
- *  Portions of this software were originally covered under the Apache
- *  Software License, Version 1.1 or Version 2.0.
+ * Portions of this software were originally covered under the Apache Software
+ * License, Version 1.1 or Version 2.0.
  *
- *  See the file LICENSE elsewhere in this distribution for license details.
+ * See the file LICENSE elsewhere in this distribution for license details.
  */
 
 package net.rptools.maptool.client;
@@ -47,8 +47,8 @@ public class AppPreferences {
 	private static final String KEY_AUTO_SAVE_INCREMENT = "autoSaveIncrement";
 	private static final int DEFAULT_AUTO_SAVE_INCREMENT = 5; // Minutes
 
-//	private static final String KEY_ENABLE_MAP_EXPORT_IMPORT = "enableMapExportImport";
-//	private static final boolean DEFAULT_ENABLE_MAP_EXPORT_IMPORT = false;
+	//	private static final String KEY_ENABLE_MAP_EXPORT_IMPORT = "enableMapExportImport";
+	//	private static final boolean DEFAULT_ENABLE_MAP_EXPORT_IMPORT = false;
 
 	private static final String KEY_CHAT_AUTOSAVE_TIME = "chatAutosaveTime";
 	private static final int DEFAULT_CHAT_AUTOSAVE_TIME = 0; // Minutes; zero=disabled
@@ -107,6 +107,9 @@ public class AppPreferences {
 	private static final String KEY_TOKENS_WARN_WHEN_DELETED = "tokensWarnWhenDeleted";
 	private static final boolean DEFAULT_TOKENS_WARN_WHEN_DELETED = true;
 
+	private static final String KEY_DRAW_WARN_WHEN_DELETED = "drawWarnWhenDeleted";
+	private static final boolean DEFAULT_DRAW_WARN_WHEN_DELETED = true;
+
 	private static final String KEY_TOKENS_START_SNAP_TO_GRID = "newTokensStartSnapToGrid";
 	private static final boolean DEFAULT_TOKENS_START_SNAP_TO_GRID = true;
 
@@ -146,6 +149,9 @@ public class AppPreferences {
 	private static final String KEY_SHOW_INIT_GAIN_MESSAGE = "showInitGainMessage";
 	private static final boolean DEFAULT_SHOW_INIT_GAIN_MESSAGE = true;
 
+	private static final String KEY_FORCE_FACING_ARROW = "forceFacingArrow";
+	private static final boolean DEFAULT_FORCE_FACING_ARROW = false;
+
 	public static void setFillSelectionBox(boolean fill) {
 		prefs.putBoolean(KEY_FILL_SELECTION_BOX, fill);
 	}
@@ -166,14 +172,14 @@ public class AppPreferences {
 		return prefs.getBoolean(KEY_SAVE_REMINDER, DEFAULT_SAVE_REMINDER);
 	}
 
-//	public static void setEnabledMapExportImport(boolean reminder) {
-//		prefs.putBoolean(KEY_ENABLE_MAP_EXPORT_IMPORT, reminder);
-//		AppActions.updateActions();
-//	}
+	//	public static void setEnabledMapExportImport(boolean reminder) {
+	//		prefs.putBoolean(KEY_ENABLE_MAP_EXPORT_IMPORT, reminder);
+	//		AppActions.updateActions();
+	//	}
 
-//	public static boolean isEnabledMapExportImport() {
-//		return prefs.getBoolean(KEY_ENABLE_MAP_EXPORT_IMPORT, DEFAULT_ENABLE_MAP_EXPORT_IMPORT);
-//	}
+	//	public static boolean isEnabledMapExportImport() {
+	//		return prefs.getBoolean(KEY_ENABLE_MAP_EXPORT_IMPORT, DEFAULT_ENABLE_MAP_EXPORT_IMPORT);
+	//	}
 
 	public static void setAutoSaveIncrement(int increment) {
 		prefs.putInt(KEY_AUTO_SAVE_INCREMENT, increment);
@@ -384,6 +390,9 @@ public class AppPreferences {
 
 	private static final String KEY_TYPING_NOTIFICATION_DURATION = "typingNotificationDuration";
 	private static final int DEFAULT_TYPING_NOTIFICATION_DURATION = 5000;
+
+	private static final String KEY_UPNP_DISCOVERY_TIMEOUT = "upnpDiscoveryTimeout";
+	private static final int DEFAULT_UPNP_DISCOVERY_TIMEOUT = 5000;
 
 	public static void setTypingNotificationDuration(int ms) {
 		prefs.putInt(KEY_TYPING_NOTIFICATION_DURATION, ms);
@@ -642,6 +651,14 @@ public class AppPreferences {
 		return prefs.getBoolean(KEY_TOKENS_WARN_WHEN_DELETED, DEFAULT_TOKENS_WARN_WHEN_DELETED);
 	}
 
+	public static void setDrawWarnWhenDeleted(boolean flag) {
+		prefs.putBoolean(KEY_DRAW_WARN_WHEN_DELETED, flag);
+	}
+
+	public static boolean getDrawWarnWhenDeleted() {
+		return prefs.getBoolean(KEY_DRAW_WARN_WHEN_DELETED, DEFAULT_DRAW_WARN_WHEN_DELETED);
+	}
+
 	public static void setTokensStartSnapToGrid(boolean flag) {
 		prefs.putBoolean(KEY_TOKENS_START_SNAP_TO_GRID, flag);
 	}
@@ -706,6 +723,14 @@ public class AppPreferences {
 		prefs.putBoolean(KEY_SHOW_STAT_SHEET, show);
 	}
 
+	public static boolean getForceFacingArrow() {
+		return prefs.getBoolean(KEY_FORCE_FACING_ARROW, DEFAULT_FORCE_FACING_ARROW);
+	}
+
+	public static void setForceFacingArrow(boolean show) {
+		prefs.putBoolean(KEY_FORCE_FACING_ARROW, show);
+	}
+
 	public static boolean getFitGMView() {
 		return prefs.getBoolean(KEY_FIT_GM_VIEW, DEFAULT_FIT_GM_VIEW);
 	}
@@ -716,6 +741,14 @@ public class AppPreferences {
 
 	public static void setMovementMetric(WalkerMetric metric) {
 		prefs.put(KEY_MOVEMENT_METRIC, metric.toString());
+	}
+
+	public static void setUpnpDiscoveryTimeout(int timeout) {
+		prefs.putInt(KEY_UPNP_DISCOVERY_TIMEOUT, timeout);
+	}
+
+	public static int getUpnpDiscoveryTimeout() {
+		return prefs.getInt(KEY_UPNP_DISCOVERY_TIMEOUT, DEFAULT_UPNP_DISCOVERY_TIMEOUT);
 	}
 
 	public static WalkerMetric getMovementMetric() {
